@@ -1,4 +1,4 @@
-package org.example.client;
+package agent.review;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;

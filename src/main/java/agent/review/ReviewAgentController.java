@@ -1,4 +1,4 @@
-package org.example.client;
+package agent.review;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
@@ -17,7 +17,7 @@ public class ReviewAgentController {
 
     @PostMapping("/chat")
     public String generation(@RequestBody ChatRequest request) {
-        System.out.println(">>> generation TOOL CALLED");
+        System.out.println(">>> generation CALLED");
         return chatClient
                 .prompt()
                 .user(request.userInput())
