@@ -1,0 +1,399 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+    background: #0d1117;
+    color: #e6edf3;
+    font-family:
+            Inter,
+            -apple-system,
+            BlinkMacSystemFont,
+            "Segoe UI",
+            sans-serif;
+}
+
+body {
+    min-height: 100vh;
+}
+
+button,
+textarea {
+    font: inherit;
+}
+
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    height: 84px;
+    padding: 0 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #21262d;
+    background: #0d1117;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+}
+
+.subtitle {
+    margin: 5px 0 0;
+    color: #8b949e;
+    font-size: 13px;
+}
+
+.badge {
+    padding: 3px 7px;
+    border-radius: 6px;
+
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.badge.local {
+    color: #3fb950;
+    background: rgba(46, 160, 67, 0.12);
+    border: 1px solid rgba(46, 160, 67, 0.3);
+}
+
+.model-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #30363d;
+    border-radius: 9px;
+    background: #161b22;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3fb950;
+    box-shadow: 0 0 10px rgba(63, 185, 80, 0.5);
+}
+
+.model-name {
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 12px;
+    color: #e6edf3;
+}
+
+.model-provider {
+    margin-top: 2px;
+    font-size: 11px;
+    color: #8b949e;
+}
+
+.workspace {
+    width: min(100%, 1000px);
+    flex: 1;
+
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.conversation {
+    flex: 1;
+    padding: 36px 28px 180px;
+}
+
+.empty-state {
+    min-height: 55vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+.empty-icon {
+    width: 58px;
+    height: 58px;
+
+    display: grid;
+    place-items: center;
+
+    margin-bottom: 18px;
+
+    border-radius: 14px;
+    border: 1px solid #30363d;
+    background: #161b22;
+
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 21px;
+    color: #58a6ff;
+}
+
+.empty-state h2 {
+    margin: 0;
+    font-size: 23px;
+}
+
+.empty-state p {
+    margin: 10px 0 24px;
+    color: #8b949e;
+}
+
+.examples {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.example-button {
+    padding: 9px 13px;
+
+    color: #c9d1d9;
+    background: #161b22;
+
+    border: 1px solid #30363d;
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition: 0.15s ease;
+}
+
+.example-button:hover {
+    border-color: #58a6ff;
+    color: #ffffff;
+    background: #1c2128;
+}
+
+.message {
+    margin-bottom: 28px;
+}
+
+.message-header {
+    margin-bottom: 8px;
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.message.user .message-header {
+    color: #58a6ff;
+}
+
+.message.agent .message-header {
+    color: #3fb950;
+}
+
+.message-content {
+    padding: 16px 18px;
+
+    border-radius: 10px;
+    border: 1px solid #30363d;
+    background: #161b22;
+
+    font-size: 14px;
+    line-height: 1.65;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.message.user .message-content {
+    background: #111820;
+}
+
+.message.error .message-content {
+    color: #ff7b72;
+    border-color: rgba(248, 81, 73, 0.4);
+}
+
+.loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.loading span {
+    width: 6px;
+    height: 6px;
+
+    background: #8b949e;
+    border-radius: 50%;
+
+    animation: pulse 1.2s infinite ease-in-out;
+}
+
+.loading span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.loading span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes pulse {
+    0%,
+    80%,
+    100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.composer {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+
+    width: min(calc(100% - 40px), 944px);
+
+    transform: translateX(-50%);
+
+    padding: 18px 0 22px;
+
+    background:
+            linear-gradient(
+                    to bottom,
+                    rgba(13, 17, 23, 0),
+                    #0d1117 26%
+            );
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+
+    padding: 10px 10px 10px 16px;
+
+    border: 1px solid #30363d;
+    border-radius: 12px;
+
+    background: #161b22;
+
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+textarea {
+    flex: 1;
+
+    min-height: 42px;
+    max-height: 180px;
+
+    padding: 10px 0;
+
+    resize: none;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: #e6edf3;
+
+    line-height: 1.45;
+}
+
+textarea::placeholder {
+    color: #6e7681;
+}
+
+.send-button {
+    height: 42px;
+
+    padding: 0 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #238636;
+    color: white;
+
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: 0.15s ease;
+}
+
+.send-button:hover {
+    background: #2ea043;
+}
+
+.send-button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.composer-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+
+    margin-top: 7px;
+    padding-right: 3px;
+
+    color: #6e7681;
+    font-size: 10px;
+}
+
+@media (max-width: 700px) {
+
+    .topbar {
+        height: auto;
+        padding: 18px;
+
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .model-info {
+        display: none;
+    }
+
+    .conversation {
+        padding: 24px 18px 170px;
+    }
+
+    .composer {
+        width: calc(100% - 24px);
+    }
+
+    .examples {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .example-button {
+        width: 100%;
+    }
+}

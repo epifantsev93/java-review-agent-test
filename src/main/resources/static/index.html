@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Review Agent</title>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app-shell">
+
+    <header class="topbar">
+        <div>
+            <div class="brand-row">
+                <h1>Java Review Agent</h1>
+                <span class="badge local">LOCAL</span>
+            </div>
+
+            <p class="subtitle">
+                AI-powered Java code review assistant
+            </p>
+        </div>
+
+        <div class="model-info">
+            <span class="status-dot"></span>
+
+            <div>
+                <div class="model-name">qwen3:8b</div>
+                <div class="model-provider">Ollama</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="workspace">
+
+        <section id="conversation" class="conversation">
+
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">&lt;/&gt;</div>
+
+                <h2>Java Review Agent</h2>
+
+                <p>
+                    Ask a Java question or send code for analysis.
+                </p>
+
+                <div class="examples">
+                    <button class="example-button"
+                            data-prompt="Explain Java HashMap in one sentence.">
+                        Explain HashMap
+                    </button>
+
+                    <button class="example-button"
+                            data-prompt="Why does Spring @Transactional not work on self-invocation?">
+                        Review @Transactional
+                    </button>
+
+                    <button class="example-button"
+                            data-prompt="What are the main problems with Java N+1 queries in Hibernate?">
+                        Explain N+1
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="composer">
+
+            <div class="input-wrapper">
+
+                <textarea
+                        id="promptInput"
+                        placeholder="Ask Java Review Agent..."
+                        rows="1"></textarea>
+
+                <button id="sendButton" class="send-button">
+                    Send
+                </button>
+
+            </div>
+
+            <div class="composer-footer">
+                <span>Enter to send</span>
+                <span>Shift + Enter for new line</span>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
