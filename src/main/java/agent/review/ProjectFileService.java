@@ -6,14 +6,19 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
 public class ProjectFileService {
+
+    private static final Duration MAVEN_TIMEOUT = Duration.ofMinutes(2);
+    private static final int MAX_COMMAND_OUTPUT_CHARS = 50_000;
 
     private final Path projectRoot =
             Path.of(System.getProperty("user.dir"));
@@ -80,32 +85,110 @@ public class ProjectFileService {
     }
 
     private CommandRunResult runMavenCommand(String argument, String commandName) {
+        Process process = null;
+
         try {
-            Process process = createMavenProcess(argument)
+            process = createMavenProcess(argument)
                     .redirectErrorStream(true)
                     .start();
 
-            String output;
-            try (var reader = process.inputReader()) {
-                output = reader.lines()
-                        .collect(Collectors.joining(System.lineSeparator()));
+            Process runningProcess = process;
+
+            CompletableFuture<String> outputFuture =
+                    CompletableFuture.supplyAsync(
+                            () -> readProcessOutput(runningProcess)
+                    );
+
+            boolean finished = process.waitFor(
+                    MAVEN_TIMEOUT.toMillis(),
+                    TimeUnit.MILLISECONDS
+            );
+
+            if (!finished) {
+                process.destroy();
+
+                if (!process.waitFor(2, TimeUnit.SECONDS)) {
+                    process.destroyForcibly();
+                    process.waitFor();
+                }
+
+                String output = outputFuture.join();
+
+                return new CommandRunResult(
+                        -1,
+                        output
+                                + System.lineSeparator()
+                                + "[PROCESS TIMED OUT after "
+                                + MAVEN_TIMEOUT.toSeconds()
+                                + " seconds]"
+                );
             }
 
-            int exitCode = process.waitFor();
+            String output = outputFuture.join();
 
-            return new CommandRunResult(exitCode, output);
+            return new CommandRunResult(
+                    process.exitValue(),
+                    output
+            );
+
         } catch (InterruptedException e) {
+            if (process != null && process.isAlive()) {
+                process.destroyForcibly();
+            }
+
             Thread.currentThread().interrupt();
+
             throw new IllegalStateException(
                     "Interrupted while running " + commandName,
                     e
             );
+
         } catch (IOException e) {
             throw new IllegalStateException(
                     "Failed to run " + commandName,
                     e
             );
         }
+    }
+
+    private String readProcessOutput(Process process) {
+        StringBuilder output = new StringBuilder();
+        boolean truncated = false;
+
+        try (var reader = process.inputReader()) {
+            char[] buffer = new char[4096];
+            int read;
+
+            while ((read = reader.read(buffer)) != -1) {
+                int remaining =
+                        MAX_COMMAND_OUTPUT_CHARS - output.length();
+
+                if (remaining > 0) {
+                    int charsToAppend = Math.min(read, remaining);
+
+                    output.append(
+                            buffer,
+                            0,
+                            charsToAppend
+                    );
+                }
+
+                if (read > remaining) {
+                    truncated = true;
+                }
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        if (truncated) {
+            output.append(System.lineSeparator())
+                    .append("[OUTPUT TRUNCATED at ")
+                    .append(MAX_COMMAND_OUTPUT_CHARS)
+                    .append(" characters]");
+        }
+
+        return output.toString();
     }
 
     private ProcessBuilder createMavenProcess(String... arguments) {
@@ -141,18 +224,25 @@ public class ProjectFileService {
                 .normalize();
 
         if (!target.startsWith(testRoot)) {
-            throw new IllegalArgumentException("Path must be inside src/test/java");
+            throw new IllegalArgumentException(
+                    "Path must be inside src/test/java"
+            );
         }
 
         if (!target.toString().endsWith(".java")) {
-            throw new IllegalArgumentException("Only Java test files are allowed");
+            throw new IllegalArgumentException(
+                    "Only Java test files are allowed"
+            );
         }
 
         try {
             Files.createDirectories(target.getParent());
             Files.writeString(target, content);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to write test file", e);
+            throw new IllegalStateException(
+                    "Failed to write test file",
+                    e
+            );
         }
     }
 }
