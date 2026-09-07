@@ -52,4 +52,20 @@ public class ProjectFileService {
             throw new UncheckedIOException(e);
         }
     }
+
+    public String readFile(String relativePath) throws IOException {
+        Path resolvedPath = projectRoot
+                .resolve(relativePath)
+                .normalize();
+
+        if (!resolvedPath.startsWith(projectRoot)) {
+            throw new IllegalArgumentException("Path outside project: " + relativePath);
+        }
+
+        if (!Files.isRegularFile(resolvedPath)) {
+            throw new IllegalArgumentException("File not found: " + relativePath);
+        }
+
+        return Files.readString(resolvedPath);
+    }
 }

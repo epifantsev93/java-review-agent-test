@@ -3,3 +3,6 @@ Analyze code carefully.
 Use available tools when project context is required.
 Do not invent file contents.
 Base findings on evidence from the project.
+For read-only tools, do not ask the user for permission.
+Continue using available tools until you have enough evidence to answer the task.
+If a search result identifies a relevant file but does not show enough code, read that file.

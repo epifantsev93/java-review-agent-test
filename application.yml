@@ -6,9 +6,12 @@ spring:
         model: qwen3:8b
         temperature: 0.2
         num-predict: 1000
+        think: false
 
-#logging:
-#  level:
-#    org.springframework.ai.chat.client.advisor: DEBUG
-
-
+    tools:
+      limits:
+        max-calls-per-tool-default: 10
+        max-calls-per-tool:
+          searchCode: 3
+        max-total-tool-calls: 15
+        on-limit-exceeded: RETURN_ERROR_RESPONSE

@@ -21,7 +21,7 @@ public class ReviewAgentConfiguration {
         return builder
                 .defaultSystem(systemPrompt)
                 .defaultTools(reviewAgentTools)
-//                .defaultAdvisors(new SimpleLoggerAdvisor())
+                .defaultAdvisors(new SimpleLoggerAdvisor())
                 .build();
     }
 }
