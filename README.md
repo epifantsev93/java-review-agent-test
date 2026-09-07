@@ -11,13 +11,20 @@ The agent can:
 - communicate with a local LLM through Ollama
 - use Spring AI tool calling
 - discover Java files in the project
-- return the tool result back to the LLM
+- search Java code with line-level evidence
+- read project files
+- continue multi-step tool calls inside a single agent loop
+- keep conversation context between requests using Spring AI ChatMemory
+- apply tool call limits
+- log agent requests, responses and tool usage
 
 Current flow:
 
 ```text
-User → Spring AI → LLM → Tool Call → Java Tool → LLM → Response
+User → Spring AI → LLM → Tool Call → Java Tool → Tool Result → LLM → Response
 ```
+
+Conversation history is kept in memory for the current application session.
 
 ## Stack
 
@@ -50,4 +57,4 @@ http://localhost:8080
 
 ## Next steps
 
-Add tools for code search, file reading and test execution, then gradually introduce evidence, guardrails and agent evaluation.
+Add test execution and agent evaluation, then gradually introduce richer evidence, audit capabilities and asynchronous task execution.
