@@ -121,4 +121,30 @@ public class ProjectFileService {
             throw new IllegalStateException("Failed to run tests", e);
         }
     }
+
+    public void writeTestFile(String relativePath, String content) {
+        Path testRoot = projectRoot
+                .resolve("src/test/java")
+                .normalize();
+
+        Path target = testRoot
+                .resolve(relativePath)
+                .normalize();
+
+        if (!target.startsWith(testRoot)) {
+            throw new IllegalArgumentException("Path must be inside src/test/java");
+        }
+
+        if (!target.toString().endsWith(".java")) {
+            throw new IllegalArgumentException("Only Java test files are allowed");
+        }
+
+        try {
+            Files.createDirectories(target.getParent());
+            Files.writeString(target, content);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to write test file", e);
+        }
+    }
+
 }

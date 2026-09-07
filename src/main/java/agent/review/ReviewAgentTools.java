@@ -56,4 +56,16 @@ public class ReviewAgentTools {
         log.info("Tool called: runTests");
         return projectFileService.runTests();
     }
+
+    @Tool(description = """
+        Creates or overwrites a Java test file inside src/test/java.
+        Use this tool only for test code.
+        relativePath must be relative to src/test/java, for example:
+        agent/review/AgentConfigCalculatorTest.java
+        """)
+    public String writeTestFile(String relativePath, String content) {
+        log.info("Tool called: writeTestFile, path={}", relativePath);
+        projectFileService.writeTestFile(relativePath, content);
+        return "Test file written successfully: " + relativePath;
+    }
 }

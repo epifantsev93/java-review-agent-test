@@ -13,6 +13,7 @@ The agent can:
 - discover Java files in the project
 - search Java code with line-level evidence
 - read project files
+- write Java test files
 - run PMD static analysis
 - run Maven tests
 - continue multi-step tool calls inside a single agent loop
