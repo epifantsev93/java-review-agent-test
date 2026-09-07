@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -71,40 +72,16 @@ public class ProjectFileService {
     }
 
     public CommandRunResult runPmd() {
-        try {
-            Process process = new ProcessBuilder(
-                    "cmd",
-                    "/c",
-                    "mvnw.cmd",
-                    "pmd:check"
-            )
-                    .directory(projectRoot.toFile())
-                    .redirectErrorStream(true)
-                    .start();
-
-            String output;
-            try (var reader = process.inputReader()) {
-                output = reader.lines()
-                        .collect(Collectors.joining(System.lineSeparator()));
-            }
-
-            int exitCode = process.waitFor();
-
-            return new CommandRunResult(exitCode, output);
-        } catch (IOException | InterruptedException e) {
-            throw new IllegalStateException("Failed to run PMD", e);
-        }
+        return runMavenCommand("pmd:check", "PMD");
     }
 
     public CommandRunResult runTests() {
+        return runMavenCommand("test", "tests");
+    }
+
+    private CommandRunResult runMavenCommand(String argument, String commandName) {
         try {
-            Process process = new ProcessBuilder(
-                    "cmd",
-                    "/c",
-                    "mvnw.cmd",
-                    "test"
-            )
-                    .directory(projectRoot.toFile())
+            Process process = createMavenProcess(argument)
                     .redirectErrorStream(true)
                     .start();
 
@@ -117,9 +94,41 @@ public class ProjectFileService {
             int exitCode = process.waitFor();
 
             return new CommandRunResult(exitCode, output);
-        } catch (IOException | InterruptedException e) {
-            throw new IllegalStateException("Failed to run tests", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException(
+                    "Interrupted while running " + commandName,
+                    e
+            );
+        } catch (IOException e) {
+            throw new IllegalStateException(
+                    "Failed to run " + commandName,
+                    e
+            );
         }
+    }
+
+    private ProcessBuilder createMavenProcess(String... arguments) {
+        List<String> command = new ArrayList<>();
+
+        if (isWindows()) {
+            command.add("cmd");
+            command.add("/c");
+            command.add("mvnw.cmd");
+        } else {
+            command.add("./mvnw");
+        }
+
+        command.addAll(List.of(arguments));
+
+        return new ProcessBuilder(command)
+                .directory(projectRoot.toFile());
+    }
+
+    private boolean isWindows() {
+        return System.getProperty("os.name")
+                .toLowerCase()
+                .contains("win");
     }
 
     public void writeTestFile(String relativePath, String content) {
@@ -146,5 +155,4 @@ public class ProjectFileService {
             throw new IllegalStateException("Failed to write test file", e);
         }
     }
-
 }
