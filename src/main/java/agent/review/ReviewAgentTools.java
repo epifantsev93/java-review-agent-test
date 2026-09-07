@@ -36,4 +36,24 @@ public class ReviewAgentTools {
         log.info("Tool called: readFile, path={}", path);
         return projectFileService.readFile(path);
     }
+
+    @Tool(description = """
+            Runs PMD static analysis for the project.
+            Treat only PMD rule violations as code issues.
+            Ignore Maven, JVM and dependency warnings that are unrelated to PMD violations.
+            """)
+    public CommandRunResult runPmd() {
+        log.info("Tool called: runPmd");
+        return projectFileService.runPmd();
+    }
+
+    @Tool(description = """
+        Runs the project's Maven tests.
+        Returns the Maven test output and exit code.
+        Use the test results as evidence when evaluating whether the project works correctly.
+        """)
+    public CommandRunResult runTests() {
+        log.info("Tool called: runTests");
+        return projectFileService.runTests();
+    }
 }

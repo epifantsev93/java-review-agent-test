@@ -7,6 +7,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -67,5 +68,57 @@ public class ProjectFileService {
         }
 
         return Files.readString(resolvedPath);
+    }
+
+    public CommandRunResult runPmd() {
+        try {
+            Process process = new ProcessBuilder(
+                    "cmd",
+                    "/c",
+                    "mvnw.cmd",
+                    "pmd:check"
+            )
+                    .directory(projectRoot.toFile())
+                    .redirectErrorStream(true)
+                    .start();
+
+            String output;
+            try (var reader = process.inputReader()) {
+                output = reader.lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
+            }
+
+            int exitCode = process.waitFor();
+
+            return new CommandRunResult(exitCode, output);
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalStateException("Failed to run PMD", e);
+        }
+    }
+
+    public CommandRunResult runTests() {
+        try {
+            Process process = new ProcessBuilder(
+                    "cmd",
+                    "/c",
+                    "mvnw.cmd",
+                    "test"
+            )
+                    .directory(projectRoot.toFile())
+                    .redirectErrorStream(true)
+                    .start();
+
+            String output;
+            try (var reader = process.inputReader()) {
+                output = reader.lines()
+                        .collect(Collectors.joining(System.lineSeparator()));
+            }
+
+            int exitCode = process.waitFor();
+
+            return new CommandRunResult(exitCode, output);
+        } catch (IOException | InterruptedException e) {
+            throw new IllegalStateException("Failed to run tests", e);
+        }
     }
 }
