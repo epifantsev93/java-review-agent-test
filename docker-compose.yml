@@ -7,5 +7,7 @@ services:
     volumes:
       - ollama_data:/root/.ollama
 
+    gpus: all
+
 volumes:
   ollama_data:

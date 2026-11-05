@@ -1,0 +1,44 @@
+server:
+  port: 8081
+
+spring:
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        model: qwen3:8b
+        temperature: 0.2
+        num-predict: 1000
+        think: false
+
+    tools:
+      limits:
+        max-calls-per-tool-default: 10
+        max-calls-per-tool:
+          searchCode: 3
+        max-total-tool-calls: 15
+        on-limit-exceeded: RETURN_ERROR_RESPONSE
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: review-agent
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JacksonJsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: "agent.review.kafka.event"
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: agent.review.kafka.event.ReviewRequestEvent
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JacksonJsonSerializer
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
